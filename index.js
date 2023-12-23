@@ -4,18 +4,19 @@ const fs = require("fs");
 
 const app = express();
 
+const DIR = 'misc/dummy';
+
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });
 
-app.get("/diary", (req, res) => {
-    const md = fs.readFileSync("d20231214.md", "utf-8");
-    console.log(md);
-    // const md = "#### ほげほげ\n" + 
-    // "This is text with **markdown**";
-
+app.get("/diary/:year?/:month?", (req, res) => {
+    const year = req.params.year;
+    const month = req.params.month;
+console.log("aaabbb");
+    console.log(year, month);
+    const md = fs.readFileSync(DIR + "/" + year + "/" + "/d20231223.md", "utf-8");
     const html = marked.parse(md);
-    console.log(html);
     res.send(html);
 });
 
