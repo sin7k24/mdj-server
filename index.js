@@ -1,5 +1,6 @@
 const express = require("express");
 const marked = require("marked");
+const fs = require("fs");
 
 const app = express();
 
@@ -8,16 +9,12 @@ app.get("/", (req, res) => {
 });
 
 app.get("/diary", (req, res) => {
-    // const md = `
-    // #### ほげほげ
-    // This is text with **markdown**
-    // `;
+    const md = fs.readFileSync("d20231214.md", "utf-8");
+    console.log(md);
+    // const md = "#### ほげほげ\n" + 
+    // "This is text with **markdown**";
 
-//    const md = "This is text with **markdown**";
-    const md = `#### ほげほげ 
-    This is text with **markdown**`;
-
-    const html = marked.parseInline(md);
+    const html = marked.parse(md);
     console.log(html);
     res.send(html);
 });
