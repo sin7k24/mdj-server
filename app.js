@@ -5,7 +5,8 @@ const util = require("./util");
 
 const app = express();
 
-const DIARY_DIR = 'misc/dummy';
+// const DIARY_DIR = 'misc/dummy';
+const DIARY_DIR = 'C://tmp/md/diary';
 
 app.get("/", (req, res) => {
     date = util.getYYYYMMDD();
