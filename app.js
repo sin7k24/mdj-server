@@ -10,10 +10,10 @@ const DIARY_DIR = 'C://tmp/md/diary';
 
 app.get("/", (req, res) => {
     date = util.getYYYYMMDD();
-    res.redirect("/diary/" + date.yyyy + "/" + date.mm);
+    res.redirect("/api/v1/md2html/" + date.yyyy + "/" + date.mm);
 });
 
-app.get("/diary/:year?/:month?", (req, res) => {
+app.get("/api/v1/md2html/:year?/:month?", (req, res) => {
     let date = util.getYYYYMMDD();
     const year = req.params.year || date.yyyy;
     const month = req.params.month || date.mm;
