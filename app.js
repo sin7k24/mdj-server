@@ -6,7 +6,8 @@ const util = require("./util");
 const app = express();
 
 // const DIARY_DIR = 'misc/dummy';
-const DIARY_DIR = 'C://tmp/md/diary';
+// const DIARY_DIR = 'C://tmp/md/diary';
+const DIARY_DIR = "/Users/nakanishishingo/src/md/diary";
 
 app.get("/", (req, res) => {
     date = util.getYYYYMMDD();
@@ -18,16 +19,28 @@ app.get("/api/v1/md2html/:year?/:month?", (req, res) => {
     const year = req.params.year || date.yyyy;
     const month = req.params.month || date.mm;
 
-    const mdFiles = fs.readdirSync(DIARY_DIR + "/" + year, { withFileTypes: true}).filter((mdFile) => {
-        return mdFile.name.startsWith("d" + year + month);
-    });
+    let mdFiles;
+    try {
+        mdFiles = fs
+            .readdirSync(DIARY_DIR + "/" + year, { withFileTypes: true })
+            .filter((mdFile) => {
+                return mdFile.name.startsWith("d" + year + month);
+            });
+    } catch (e) {
+        console.error(e);
+        res.send(`<h1>diary not found. ${year}-${month}</h1>`);
+        return;
+    }
 
     let html = "";
     for (const mdFile of mdFiles) {
         date = util.getYYYYMMDD(mdFile.name);
-        html += `<h1>${date.yyyy}年${date.mm}月${date.dd}日（${date.day}）</h1>`
-        const mdContent = fs.readFileSync(DIARY_DIR + "/" + year + "/" + mdFile.name, "utf-8");
-        html += marked.parse(mdContent) + "<hr/>";            
+        html += `<h1>${date.yyyy}年${date.mm}月${date.dd}日（${date.day}）</h1>`;
+        const mdContent = fs.readFileSync(
+            DIARY_DIR + "/" + year + "/" + mdFile.name,
+            "utf-8"
+        );
+        html += marked.parse(mdContent) + "<hr/>";
     }
     res.send(html);
 });
