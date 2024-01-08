@@ -45,6 +45,28 @@ app.get("/api/v1/md2html/:year?/:month?", (req, res) => {
     res.send(html);
 });
 
+app.get("/api/v1/years", (req, res) => {
+    let years;
+    try {
+        years = fs
+            .readdirSync(DIARY_DIR, { withFileTypes: true })
+            .filter((f) => {
+                return f.isDirectory();
+            });
+    } catch (e) {
+        console.error(e);
+        res.status(404).send("years not found");
+        return;
+    }
+
+    let ret = {
+        years: years.map((dirent) => dirent.name)
+    };
+
+    res.send(ret);
+});
+
+
 app.listen(3000, () => {
     console.log("Server listening on port 3000");
 });
