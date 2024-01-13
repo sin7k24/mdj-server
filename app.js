@@ -6,8 +6,8 @@ const util = require("./util");
 const app = express();
 
 // const DIARY_DIR = 'misc/dummy';
-// const DIARY_DIR = 'C://tmp/md/diary';
-const DIARY_DIR = "/Users/nakanishishingo/src/md/diary";
+const DIARY_DIR = 'C://tmp/md/diary';
+// const DIARY_DIR = "/Users/nakanishishingo/src/md/diary";
 
 app.get("/", (req, res) => {
     date = util.getYYYYMMDD();
@@ -15,6 +15,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/v1/md2html/:year?/:month?", (req, res) => {
+    console.log("hogehoge");
     let date = util.getYYYYMMDD();
     const year = req.params.year || date.yyyy;
     const month = req.params.month || date.mm;
@@ -35,12 +36,12 @@ app.get("/api/v1/md2html/:year?/:month?", (req, res) => {
     let html = "";
     for (const mdFile of mdFiles) {
         date = util.getYYYYMMDD(mdFile.name);
-        html += `<h1>${date.yyyy}年${date.mm}月${date.dd}日（${date.day}）</h1>`;
+        html += `<diary year="${date.yyyy}" month="${date.mm}" day="${date.dd}" dow="${date.dow}">`;
         const mdContent = fs.readFileSync(
             DIARY_DIR + "/" + year + "/" + mdFile.name,
             "utf-8"
         );
-        html += marked.parse(mdContent) + "<hr/>";
+        html += marked.parse(mdContent) + "<hr/></diary>";
     }
     res.send(html);
 });
