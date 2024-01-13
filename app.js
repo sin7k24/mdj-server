@@ -10,7 +10,7 @@ const DIARY_DIR = 'C://tmp/md/diary';
 // const DIARY_DIR = "/Users/nakanishishingo/src/md/diary";
 
 app.get("/", (req, res) => {
-    date = util.getYYYYMMDD();
+    const date = util.getYYYYMMDD();
     res.redirect("/api/v1/md2html/" + date.yyyy + "/" + date.mm);
 });
 
@@ -44,6 +44,17 @@ app.get("/api/v1/md2html/:year?/:month?", (req, res) => {
         html += marked.parse(mdContent) + "<hr/></diary>";
     }
     res.send(html);
+});
+
+app.get("/api/v1/grep", (req, res)=>{
+    const searchStr = "卓球";
+
+    util.grep(searchStr);
+    const result = {
+        file: "d20240106.md",
+        line: "卓球ほげほげ"
+    };
+    res.send([result]);
 });
 
 app.get("/api/v1/years", (req, res) => {
