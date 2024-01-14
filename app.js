@@ -1,44 +1,43 @@
 const express = require("express");
 const marked = require("marked");
 const fs = require("fs");
-const util = require("./util");
+const Util = require("./util");
+const { DIARY_ROOT } = require("./config");
 
 const app = express();
+app.use(express.json());
 
-// const DIARY_DIR = 'misc/dummy';
-const DIARY_DIR = 'C://tmp/md/diary';
-// const DIARY_DIR = "/Users/nakanishishingo/src/md/diary";
-
+/**
+ *
+ */
 app.get("/", (req, res) => {
-    const date = util.getYYYYMMDD();
+    const date = Util.getYYYYMMDD();
     res.redirect("/api/v1/md2html/" + date.yyyy + "/" + date.mm);
 });
 
+/**
+ *
+ */
 app.get("/api/v1/md2html/:year?/:month?", (req, res) => {
     console.log("hogehoge");
-    let date = util.getYYYYMMDD();
-    const year = req.params.year || date.yyyy;
-    const month = req.params.month || date.mm;
+    let date = Util.getDate();
+    const year = req.params.year || date.year;
+    const month = req.params.month || date.month;
 
     let mdFiles;
     try {
-        mdFiles = fs
-            .readdirSync(DIARY_DIR + "/" + year, { withFileTypes: true })
-            .filter((mdFile) => {
-                return mdFile.name.startsWith("d" + year + month);
-            });
+        mdFiles = Util.getDiaries(year, month);
     } catch (e) {
         console.error(e);
         res.send(`<h1>diary not found. ${year}-${month}</h1>`);
         return;
     }
-
     let html = "";
     for (const mdFile of mdFiles) {
-        date = util.getYYYYMMDD(mdFile.name);
-        html += `<diary year="${date.yyyy}" month="${date.mm}" day="${date.dd}" dow="${date.dow}">`;
+        date = Util.getDate(mdFile.name);
+        html += `<diary year="${date.year}" month="${date.month}" day="${date.day}" dow="${date.dow}">`;
         const mdContent = fs.readFileSync(
-            DIARY_DIR + "/" + year + "/" + mdFile.name,
+            DIARY_ROOT + "/" + year + "/" + mdFile.name,
             "utf-8"
         );
         html += marked.parse(mdContent) + "<hr/></diary>";
@@ -46,22 +45,29 @@ app.get("/api/v1/md2html/:year?/:month?", (req, res) => {
     res.send(html);
 });
 
-app.get("/api/v1/grep", (req, res)=>{
-    const searchStr = "卓球";
+/**
+ *
+ */
+app.post("/api/v1/grep", (req, res) => {
+    // const searchStr = "卓球";
+    console.log(req.body);
 
-    util.grep(searchStr);
+    // Util.grep(searchStr);
     const result = {
         file: "d20240106.md",
-        line: "卓球ほげほげ"
+        line: "卓球ほげほげ",
     };
     res.send([result]);
 });
 
+/**
+ *
+ */
 app.get("/api/v1/years", (req, res) => {
     let years;
     try {
         years = fs
-            .readdirSync(DIARY_DIR, { withFileTypes: true })
+            .readdirSync(DIARY_ROOT, { withFileTypes: true })
             .filter((f) => {
                 return f.isDirectory();
             });
@@ -72,12 +78,11 @@ app.get("/api/v1/years", (req, res) => {
     }
 
     let ret = {
-        years: years.map((dirent) => dirent.name)
+        years: years.map((dirent) => dirent.name),
     };
 
     res.send(ret);
 });
-
 
 app.listen(3000, () => {
     console.log("Server listening on port 3000");

@@ -1,11 +1,10 @@
 const fs = require("fs");
 const readline = require("readline");
+const { DIARY_ROOT } = require("./config");
 
-const DIARY_DIR = "C://tmp/md/diary";
-
-module.exports = {
-    getYYYYMMDD: (mdFileName) => {
-        let date = null;
+class Util {
+    static getDate(mdFileName) {
+        let d = null;
         if (mdFileName) {
             const format =
                 mdFileName.substring(1, 5) +
@@ -13,35 +12,66 @@ module.exports = {
                 mdFileName.substring(5, 7) +
                 "-" +
                 mdFileName.substring(7, 9);
-            date = new Date(format);
+            d = new Date(format);
         } else {
-            date = new Date();
+            d = new Date();
         }
 
-        const yyyy = date.getFullYear();
-        const mm = ("0" + (date.getMonth() + 1)).slice(-2);
-        const dd = ("0" + date.getDate()).slice(-2);
-        const dow = ["日", "月", "火", "水", "木", "金", "土"][date.getDay()];
+        const year = d.getFullYear();
+        const month = ("0" + (d.getMonth() + 1)).slice(-2);
+        const day = ("0" + d.getDate()).slice(-2);
+        // const dow = ["日", "月", "火", "水", "木", "金", "土"][date.getDay()];
+        const dow = d.getDay();
 
-        return { yyyy: yyyy, mm: mm, dd: dd, dow: dow };
-    },
-    grep: (str) => {
-        let mdFiles;
-        try {
-            mdFiles = fs
-                .readdirSync(DIARY_DIR + "/" + 2023, { withFileTypes: true })
-                .filter((mdFile) => {
-                    return mdFile.name.startsWith("d" + "202305");
-                });
-        } catch (e) {
-            console.error(e);
-            // res.send(`<h1>diary not found. ${year}-${month}</h1>`);
-            return;
+        return { year: year, month: month, day: day, dow: dow };
+    }
+
+    static getDiaries(year, month) {
+        let years = [];
+        if (!year) {
+            years = fs
+                .readdirSync(DIARY_ROOT, { withFileTypes: true })
+                .filter((f) => {
+                    return f.isDirectory();
+                })
+                .map((f) => f.name);
+        } else {
+            years.push(year);
         }
+
+        if (!month) {
+            month = "";
+        }
+
+        let mdFiles = [];
+        for (const y of years) {
+            try {
+                mdFiles = mdFiles.concat(
+                    fs
+                        .readdirSync(DIARY_ROOT + "/" + y, {
+                            withFileTypes: true,
+                        })
+                        .filter((mdFile) => {
+                            return mdFile.name.startsWith("d" + y + month);
+                        })
+                );
+            } catch (e) {
+                console.error(e);
+                throw e;
+            }
+        }
+
+        return mdFiles;
+    }
+
+    static grep(searchStr) {
+        // get all diaries markdown
+        const mdFiles = Util.getDiaries();
 
         for (const mdFile of mdFiles) {
+            const date = Util.getDate(mdFile.name);
             const readStream = fs.createReadStream(
-                DIARY_DIR + "/" + 2023 + "/" + mdFile.name,
+                DIARY_ROOT + "/" + date.year + "/" + mdFile.name,
                 {
                     encoding: "utf8",
                 }
@@ -52,10 +82,12 @@ module.exports = {
             rl.on("line", (line) => {
                 lineIndex++;
 
-                if (line.search(str) > -1) {
+                if (line.search(searchStr) > -1) {
                     console.log(`${mdFile.name}: ${line}`);
                 }
             });
         }
-    },
-};
+    }
+}
+
+module.exports = Util;
