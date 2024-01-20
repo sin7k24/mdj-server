@@ -1,5 +1,4 @@
 const fs = require("fs");
-const readline = require("readline");
 const { DIARY_ROOT } = require("./config");
 
 class Util {
@@ -68,25 +67,39 @@ class Util {
         // get all diaries markdown
         const mdFiles = Util.getDiaries();
 
+        const result = [];
         for (const mdFile of mdFiles) {
             const date = Util.getDate(mdFile.name);
-            const readStream = fs.createReadStream(
+
+            const mdContent = fs.readFileSync(
                 DIARY_ROOT + "/" + date.year + "/" + mdFile.name,
-                {
-                    encoding: "utf8",
-                }
+                "utf-8"
             );
-            const rl = readline.createInterface({ input: readStream });
 
-            let lineIndex = 0;
-            rl.on("line", (line) => {
-                lineIndex++;
+            const regexp = new RegExp(searchStr, "i");
+            if (regexp.test(mdContent)) {
+                const lines = mdContent
+                    .replace(new RegExp(/^\n/gm), "")
+                    .split("\n");
 
-                if (line.search(searchStr) > -1) {
-                    console.log(`${mdFile.name}: ${line}`);
+                let hit = "";
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+
+                    if (line.search(regexp) > -1) {
+                        hit +=
+                            (lines[i - 1] || "") + line + (lines[i + 1] || "");
+                        break;
+                    }
                 }
-            });
+                result.push({
+                    file: mdFile.name,
+                    hit: hit,
+                });
+            }
         }
+
+        return result;
     }
 }
 

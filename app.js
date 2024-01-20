@@ -27,11 +27,16 @@ app.get("/api/v1/md2html/:year?/:month?", (req, res) => {
     let mdFiles;
     try {
         mdFiles = Util.getDiaries(year, month);
+        if(mdFiles.length == 0) {
+            res.status(404).send();
+            return;
+        }
     } catch (e) {
         console.error(e);
         res.send(`<h1>diary not found. ${year}-${month}</h1>`);
         return;
     }
+
     let html = "";
     for (const mdFile of mdFiles) {
         date = Util.getDate(mdFile.name);
@@ -49,15 +54,11 @@ app.get("/api/v1/md2html/:year?/:month?", (req, res) => {
  *
  */
 app.post("/api/v1/grep", (req, res) => {
-    // const searchStr = "卓球";
-    console.log(req.body);
+    console.log(req.body.words);
 
-    // Util.grep(searchStr);
-    const result = {
-        file: "d20240106.md",
-        line: "卓球ほげほげ",
-    };
-    res.send([result]);
+    const result = Util.grep(req.body.words);
+    console.log(result.length);
+    res.send(result);
 });
 
 /**
