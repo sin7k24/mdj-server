@@ -82,19 +82,24 @@ class Util {
                     .replace(new RegExp(/^\n/gm), "")
                     .split("\n");
 
-                let hit = "";
+                let hitline = "";
                 for (let i = 0; i < lines.length; i++) {
                     const line = lines[i];
 
                     if (line.search(regexp) > -1) {
-                        hit +=
+                        hitline +=
                             (lines[i - 1] || "") + line + (lines[i + 1] || "");
                         break;
                     }
                 }
+                const {year, month, day, dow} = Util.getDate(mdFile.name);
                 result.push({
+                    year: year,
+                    month: month,
+                    day: day,
+                    dow: dow,
                     file: mdFile.name,
-                    hit: hit,
+                    hitline: hitline,
                 });
             }
         }
