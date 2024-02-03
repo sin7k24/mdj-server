@@ -45,7 +45,8 @@ app.get("/api/v1/md2html/:year?/:month?", (req, res) => {
             DIARY_ROOT + "/" + year + "/" + mdFile.name,
             "utf-8"
         );
-        html += marked.parse(mdContent) + "<hr/></diary>";
+        // html += marked.parse(mdContent) + "<hr/></diary>";
+        html += marked.parse(mdContent) + "</diary>";
     }
     res.send(html);
 });
