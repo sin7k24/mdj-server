@@ -51,6 +51,32 @@ app.get("/api/v1/md2html/:year?/:month?", (req, res) => {
     res.send(html);
 });
 
+app.get("/api/v1/md/:year/:month/:day", (req, res) => {
+    const year = req.params.year;
+    const month = req.params.month;
+    const day = req.params.day;
+
+    console.log("md: ", year, month, day);
+    const mdContent = Util.getMarkdownContent(year, month, day);
+
+    res.send(mdContent);
+});
+
+app.post("/api/v1/md", (req, res) => {
+    console.log(req.body);
+
+    const year = req.body.year;
+    const month = req.body.month;
+    const day = req.body.day;
+    const mdContent = req.body.mdContent;
+
+    console.log("md: ", year, month, day, mdContent);
+    // const mdContent = Util.getMarkdownContent(year, month, day);
+
+    res.send("hoge");
+});
+
+
 /**
  *
  */

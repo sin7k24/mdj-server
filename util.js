@@ -63,6 +63,15 @@ class Util {
         return mdFiles;
     }
 
+    static getMarkdownContent(year, month, day) {
+        const mdPath = `${DIARY_ROOT}/${year}/d${year}${month}${day}.md`;
+        return fs.existsSync(mdPath) ? fs.readFileSync(mdPath) : "";
+    }
+
+    static saveMarkdown(year, month, day, mdContent) {
+        
+    }
+
     static grep(searchStr) {
         // get all diaries markdown
         const mdFiles = Util.getDiaries();
