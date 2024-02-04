@@ -68,8 +68,9 @@ class Util {
         return fs.existsSync(mdPath) ? fs.readFileSync(mdPath) : "";
     }
 
-    static saveMarkdown(year, month, day, mdContent) {
-        
+    static saveMarkdownContent(year, month, day, mdContent) {
+        const mdPath = `${DIARY_ROOT}/${year}/d${year}${month}${day}.md`;
+        fs.writeFileSync(mdPath, mdContent);
     }
 
     static grep(searchStr) {
