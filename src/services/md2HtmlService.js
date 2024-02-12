@@ -1,15 +1,16 @@
 const fs = require("fs");
 const marked = require("marked");
 
-const Util = require('../utils/util');
+const mdService = require('./mdService');
+const utilityService = require('./utilityService');
 const { DIARY_ROOT } = require("../configs/config");
 
 async function getMonthDiaryHtml(year, month) {
-    let date = Util.getDate();
+    let date = await utilityService.getDate();
 
     let mdFiles;
     try {
-        mdFiles = Util.getDiaries(year, month);
+        mdFiles = await mdService.getMdFiles(year, month);
         if(mdFiles.length == 0) {
             // res.status(404).send();
             return;
@@ -22,7 +23,7 @@ async function getMonthDiaryHtml(year, month) {
 
     let html = "";
     for (const mdFile of mdFiles) {
-        date = Util.getDate(mdFile.name);
+        date = await utilityService.getDate(mdFile.name);
         html += `<diary year="${date.year}" month="${date.month}" day="${date.day}" dow="${date.dow}">`;
         const mdContent = fs.readFileSync(
             DIARY_ROOT + "/" + year + "/" + mdFile.name,
