@@ -42,6 +42,15 @@ const config = {
   //   "clover"
   // ],
 
+  coverageReporters: [
+    "json-summary",
+    "json",
+    "text",
+    "lcov",
+    "clover"
+  ],
+
+
   // An object that configures minimum threshold enforcement for coverage results
   // coverageThreshold: undefined,
 
