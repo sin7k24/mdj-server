@@ -1,3 +1,3 @@
-# Documentation
+# Markdown Journal Server
 
-[mdj](../mdj) backend REST server implemented with Express.
+[mdj](https://github.com/sin7k24/mdj) backend REST server implemented with Express.
