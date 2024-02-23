@@ -3,6 +3,7 @@ const app = express();
 const apiRouter = require("./routes/apiRouter");
 
 app.use(express.json());
+app.use('/img', express.static('img'));
 
 app.use('/api/v1', apiRouter);
 
