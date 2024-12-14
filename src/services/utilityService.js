@@ -18,7 +18,6 @@ async function getDate(mdFileName) {
     const year = d.getFullYear();
     const month = ("0" + (d.getMonth() + 1)).slice(-2);
     const day = ("0" + d.getDate()).slice(-2);
-    // const dow = ["日", "月", "火", "水", "木", "金", "土"][date.getDay()];
     const dow = d.getDay();
 
     return { year: year, month: month, day: day, dow: dow };
