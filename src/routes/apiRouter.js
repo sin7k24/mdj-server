@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const initController = require("../controllers/initController");
 const md2HtmlController = require("../controllers/md2HtmlController");
 const mdController = require("../controllers/mdController");
 const searchController = require("../controllers/searchController");
@@ -12,6 +13,9 @@ const myLogger = function (req, res, next) {
     next();
 };
 router.use(myLogger);
+
+router.get("/init", initController.get);
+router.put("/init", initController.put);
 
 router.get("/md2html/:year?/:month?", md2HtmlController.get);
 
