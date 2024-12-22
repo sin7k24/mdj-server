@@ -1,28 +1,25 @@
-const sqlite3 = require("sqlite3");
-const fs = require("fs");
+const Database = require("better-sqlite3");
+const db = new Database("db.sqlite3");
 
-const db = new sqlite3.Database("./db.sqlite3", (err) => {
-    if (err) {
-        console.error("database error: " + err.message);
-    } else {
-        db.serialize(() => {
-            db.run("create table if not exists users( \
-                id integer primary key autoincrement, \
-                password nverchar(32), \
-                savepath nverchar(128) \
-            )", (err) => {
-                if (err) {
-                    console.error("table error: " + err.message);
-                } else {
-                    // db.run("insert into users(id,password,savedir) values(?,?,?)", "naka", "hoge#111", "/Users/nakanishishingo/src/md");
-                }
-            });
-        });
-    }
-});
+const ddl = `
+    create table if not exists users( 
+        id varchar(32) primary key, 
+        password varchar(32), 
+        savepath varchar(260)
+    )
+`;
+db.prepare(ddl).run();
 
-async function initialize() {
+async function addUser(user) {
+    db.prepare("insert into users(id, password, savepath) values(?,?,?)").run(user.id, user.password, user.savepath);
+    console.log("INSERTRED");
 }
 
+async function getUser(id, password) {
+    console.log(id, password);
+    const user = db.prepare("select * from users where id = ? and password = ?").get(id, password);
+    console.log(user);
+    return user;
+}
 
-module.exports = { initialize };
+module.exports = { getUser, addUser };
