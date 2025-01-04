@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const basicAuth = require("../middlewares/basicAuth");
 const usersController = require("../controllers/usersController");
 const md2HtmlController = require("../controllers/md2HtmlController");
 const mdController = require("../controllers/mdController");
@@ -14,8 +15,11 @@ const myLogger = function (req, res, next) {
 };
 router.use(myLogger);
 
+router.get("/", basicAuth, (req, res) =>{
+    res.send("Helloworld");
+});
 router.get("/users", usersController.get);
-router.put("/users", usersController.put);
+router.post("/users", usersController.post);
 
 router.get("/md2html/:year?/:month?", md2HtmlController.get);
 

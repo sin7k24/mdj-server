@@ -4,7 +4,6 @@ const utilityService = require('../services/utilityService');
 const mdService = require('../services/mdService');
 const dbService = require('../services/dbService');
 
-
 async function get(req, res, next) {
     const id = req.query.id;
     const password = req.query.password;
@@ -14,17 +13,21 @@ async function get(req, res, next) {
     if (user) {
         res.status(200).send(user);
     } else {
-        res.status(401).send("no user");
+        res.status(401).send("User not found");
     }
 }
 
-async function put(req, res, next) {
+async function post(req, res, next) {
     console.log(req.body);
-    const ret = dbService.addUser(req.body);
-    res.send("test");
+    const ret = await dbService.addUser(req.body);
+    if(ret) {
+        res.status(201).send("created user");
+    }else{
+        res.status(500).send("failed to create user");
+    }
 }
 
 module.exports = {
     get,
-    put
+    post
 };
