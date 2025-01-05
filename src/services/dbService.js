@@ -13,9 +13,8 @@ const ddl = `
 db.prepare(ddl).run();
 
 async function getUser(id, password) {
-    console.log(id, password);
     const user = db.prepare("select * from users where id = ? and password = ?").get(id, password);
-    console.log(user);
+    console.log("getUser()", user);
     return user;
 }
 
